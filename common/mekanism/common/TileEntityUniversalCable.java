@@ -57,7 +57,16 @@ public class TileEntityUniversalCable extends TileEntity implements IUniversalCa
 	@Override
 	public void setNetwork(EnergyNetwork network)
 	{
-		energyNetwork = network;
+		if(network != energyNetwork)
+		{
+			removeFromNetwork();
+			energyNetwork = network;
+		}
+	}
+	
+	public void removeFromNetwork()
+	{
+		energyNetwork.removeCable(this);
 	}
 
 	@Override
@@ -104,6 +113,12 @@ public class TileEntityUniversalCable extends TileEntity implements IUniversalCa
 	public AxisAlignedBB getRenderBoundingBox()
 	{
 		return INFINITE_EXTENT_AABB;
+	}
+	
+	@Override
+	public void onChunkUnload() {
+		invalidate();
+		EnergyNetworkRegistry.getInstance().pruneEmptyNetworks();
 	}
 }
 

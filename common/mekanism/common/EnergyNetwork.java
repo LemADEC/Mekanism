@@ -31,6 +31,8 @@ public class EnergyNetwork
 	private double joulesTransmitted = 0;
 	private double joulesLastTick = 0;
 	
+	private boolean cablesModified;
+	
 	public EnergyNetwork(IUniversalCable... varCables)
 	{
 		cables.addAll(Arrays.asList(varCables));
@@ -155,6 +157,7 @@ public class EnergyNetwork
 
 	public void refresh()
 	{
+		cablesModified = false;
 		Iterator it = cables.iterator();
 		
 		possibleAcceptors.clear();
@@ -162,6 +165,11 @@ public class EnergyNetwork
 
 		while(it.hasNext())
 		{
+			if(cablesModified)
+			{
+				refresh();
+				return;
+			}
 			IUniversalCable conductor = (IUniversalCable)it.next();
 
 			if(conductor == null)
@@ -194,24 +202,28 @@ public class EnergyNetwork
 
 	public void merge(EnergyNetwork network)
 	{
-		EnergyNetworkRegistry registry = EnergyNetworkRegistry.getInstance();
-		
 		if(network != null && network != this)
 		{
 			EnergyNetwork newNetwork = new EnergyNetwork();
-			newNetwork.cables.addAll(cables);
-			registry.removeNetwork(this);
-			newNetwork.cables.addAll(network.cables);
-			registry.removeNetwork(network);
+			newNetwork.addAllCables(cables);
+			deregister();
+			newNetwork.addAllCables(network.cables);
+			network.deregister();
 			newNetwork.refresh();
 		}
+	}
+	
+	public void addAllCables(Set<IUniversalCable> newCables)
+	{
+		cables.addAll(newCables);
+		cablesModified = true;
 	}
 
 	public void split(IUniversalCable splitPoint)
 	{
 		if(splitPoint instanceof TileEntity)
 		{
-			cables.remove(splitPoint);
+			removeCable(splitPoint);
 			
 			TileEntity[] connectedBlocks = new TileEntity[6];
 			boolean[] dealtWith = {false, false, false, false, false, false};
@@ -267,8 +279,25 @@ public class EnergyNetwork
 				}
 			}
 			
-			EnergyNetworkRegistry.getInstance().removeNetwork(this);
+			deregister();
 		}
+	}
+	
+	public void removeCable(IUniversalCable cable)
+	{
+		cables.remove(cable);
+		cablesModified = true;
+		if(cables.size() == 0)
+		{
+			deregister();
+		}
+	}
+	
+	public void deregister()
+	{
+		cables.clear();
+		cablesModified = true;
+		EnergyNetworkRegistry.getInstance().removeNetwork(this);
 	}
 	
 	public static class NetworkFinder

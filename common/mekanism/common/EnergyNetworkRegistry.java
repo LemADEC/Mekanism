@@ -38,6 +38,17 @@ public class EnergyNetworkRegistry implements ITickHandler
 		}
 	}
 	
+	public void pruneEmptyNetworks() {
+		for(EnergyNetwork e : networks)
+		{
+			if(e.cables.size() == 0)
+			{
+				removeNetwork(e);
+			}
+		}
+		
+	}
+	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData)
 	{
