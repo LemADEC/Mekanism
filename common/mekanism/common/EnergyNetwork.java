@@ -23,15 +23,13 @@ import buildcraft.api.power.IPowerReceptor;
 
 public class EnergyNetwork
 {
-	public Set<IUniversalCable> cables = new HashSet<IUniversalCable>();
+	public HashSet<IUniversalCable> cables = new HashSet<IUniversalCable>();
 	
 	public Set<TileEntity> possibleAcceptors = new HashSet<TileEntity>();
 	public Map<TileEntity, ForgeDirection> acceptorDirections = new HashMap<TileEntity, ForgeDirection>();
 	
 	private double joulesTransmitted = 0;
 	private double joulesLastTick = 0;
-	
-	private boolean cablesModified;
 	
 	public EnergyNetwork(IUniversalCable... varCables)
 	{
@@ -157,35 +155,27 @@ public class EnergyNetwork
 
 	public void refresh()
 	{
-		cablesModified = false;
-		Iterator it = cables.iterator();
+		Set<IUniversalCable> iterCables = (Set<IUniversalCable>) cables.clone();
+		Iterator<IUniversalCable> it = iterCables.iterator();
 		
 		possibleAcceptors.clear();
 		acceptorDirections.clear();
 
 		while(it.hasNext())
 		{
-			if(cablesModified)
-			{
-				refresh();
-				return;
-			}
 			IUniversalCable conductor = (IUniversalCable)it.next();
 
-			if(conductor == null)
+			if(conductor == null || ((TileEntity)conductor).isInvalid())
 			{
 				it.remove();
-			}
-			else if(((TileEntity)conductor).isInvalid())
-			{
-				it.remove();
+				cables.remove(conductor);
 			}
 			else {
 				conductor.setNetwork(this);
 			}
 		}
 		
-		for(IUniversalCable cable : cables)
+		for(IUniversalCable cable : iterCables)
 		{
 			TileEntity[] acceptors = CableUtils.getConnectedEnergyAcceptors((TileEntity)cable);
 		
@@ -216,7 +206,6 @@ public class EnergyNetwork
 	public void addAllCables(Set<IUniversalCable> newCables)
 	{
 		cables.addAll(newCables);
-		cablesModified = true;
 	}
 
 	public void split(IUniversalCable splitPoint)
@@ -286,7 +275,6 @@ public class EnergyNetwork
 	public void removeCable(IUniversalCable cable)
 	{
 		cables.remove(cable);
-		cablesModified = true;
 		if(cables.size() == 0)
 		{
 			deregister();
@@ -296,7 +284,6 @@ public class EnergyNetwork
 	public void deregister()
 	{
 		cables.clear();
-		cablesModified = true;
 		EnergyNetworkRegistry.getInstance().removeNetwork(this);
 	}
 	
