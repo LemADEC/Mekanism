@@ -43,6 +43,11 @@ public class ItemEnergyMeter extends ItemEnergized
 	                player.sendChatToPlayer(EnumColor.GREY + "------------- " + EnumColor.DARK_BLUE + "[=======]" + EnumColor.GREY + " -------------");
     			}
     		}
+    		if(player.isSneaking() && Mekanism.debug){
+    			player.sendChatToPlayer(EnumColor.GREY + "---------- " + EnumColor.DARK_BLUE + "[Mekanism Debug]" + EnumColor.GREY + " ----------");
+    			player.sendChatToPlayer(EnumColor.GREY + " *Networks: " + EnumColor.DARK_GREY + EnergyNetworkRegistry.getInstance().toString());
+    			player.sendChatToPlayer(EnumColor.GREY + "------------- " + EnumColor.DARK_BLUE + "[=======]" + EnumColor.GREY + " -------------");
+    		}
     	}
     	
     	return false;
