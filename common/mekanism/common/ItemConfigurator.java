@@ -59,6 +59,10 @@ public class ItemConfigurator extends ItemEnergized
 	    			return true;
 	    		}
     		}
+    		else if(world.getBlockTileEntity(x, y, z) instanceof IUniversalCable)
+    		{
+    			((IUniversalCable)world.getBlockTileEntity(x, y, z)).fixNetwork();
+    		}
     		
     		if(getState(stack) == 0)
     		{
