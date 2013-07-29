@@ -1,6 +1,7 @@
 package mekanism.common;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import mekanism.api.Object3D;
 import net.minecraft.tileentity.TileEntity;
@@ -35,12 +36,45 @@ public class TileEntityUniversalCable extends TileEntity implements IUniversalCa
 	@Override
 	public EnergyNetwork getNetwork()
 	{
-		if(energyNetwork == null)
+		return getNetwork(true);
+	}
+	
+	@Override
+	public EnergyNetwork getNetwork(boolean createIfNull)
+	{
+		if(energyNetwork == null && createIfNull)
 		{
-			energyNetwork = new EnergyNetwork(this);
+			TileEntity[] adjacentCables = CableUtils.getConnectedCables(this);
+			HashSet<EnergyNetwork> connectedNets = new HashSet<EnergyNetwork>();
+			for(TileEntity cable : adjacentCables)
+			{
+				if(cable instanceof IUniversalCable && ((IUniversalCable)cable).getNetwork(false) != null)
+				{
+					connectedNets.add(((IUniversalCable)cable).getNetwork());
+				}
+			}
+			if(connectedNets.size() == 0)
+			{
+				energyNetwork = new EnergyNetwork(this);
+			}
+			else if(connectedNets.size() == 1)
+			{
+				energyNetwork = (EnergyNetwork)connectedNets.toArray()[0];
+				energyNetwork.cables.add(this);
+			}
+			else {
+				energyNetwork = new EnergyNetwork(connectedNets);
+				energyNetwork.cables.add(this);
+			}
 		}
 		
 		return energyNetwork;
+	}
+	
+	@Override
+	public void fixNetwork()
+	{
+		getNetwork().fixMessedUpNetwork(this);
 	}
 	
 	@Override
@@ -64,6 +98,7 @@ public class TileEntityUniversalCable extends TileEntity implements IUniversalCa
 		}
 	}
 	
+	@Override
 	public void removeFromNetwork()
 	{
 		energyNetwork.removeCable(this);

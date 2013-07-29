@@ -13,7 +13,7 @@ public class EnergyNetworkRegistry implements ITickHandler
 {
 	private static EnergyNetworkRegistry INSTANCE = new EnergyNetworkRegistry();
 	
-	private Set<EnergyNetwork> networks = new HashSet<EnergyNetwork>();
+	private HashSet<EnergyNetwork> networks = new HashSet<EnergyNetwork>();
 	
 	public EnergyNetworkRegistry()
 	{
@@ -58,9 +58,13 @@ public class EnergyNetworkRegistry implements ITickHandler
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData)
 	{
-		for(EnergyNetwork net : networks)
+		Set<EnergyNetwork> iterNetworks = (Set<EnergyNetwork>) networks.clone();
+		for(EnergyNetwork net : iterNetworks)
 		{
-			net.clearJoulesTransmitted();
+			if(networks.contains(net))
+			{
+				net.tick();
+			}
 		}
 	}
 
