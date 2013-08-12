@@ -4,6 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class Object3D 
@@ -42,8 +43,10 @@ public class Object3D
 		return world.getBlockId(xCoord, yCoord, zCoord);
 	}
 	
-	public TileEntity getTileEntity(IBlockAccess world)
+	public TileEntity getTileEntity(World world)
 	{
+		if(!world.blockExists(xCoord, yCoord, zCoord))
+			return null;
 		return world.getBlockTileEntity(xCoord, yCoord, zCoord);
 	}
 	
