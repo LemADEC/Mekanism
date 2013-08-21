@@ -1,5 +1,7 @@
 package mekanism.common;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import mekanism.api.ITransmitter;
@@ -55,7 +57,7 @@ public class TileEntityUniversalCable extends TileEntityTransmitter<EnergyNetwor
 			
 			if(connectedNets.size() == 0 || worldObj.isRemote)
 			{
-				theNetwork = new EnergyNetwork(this);
+				theNetwork = new EnergyNetwork((Collection<ITransmitter<EnergyNetwork>>)Collections.singletonList((ITransmitter<EnergyNetwork>)this));
 			}
 			else if(connectedNets.size() == 1)
 			{

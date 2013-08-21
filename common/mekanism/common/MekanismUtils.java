@@ -969,8 +969,8 @@ public final class MekanismUtils
     		{
     			return true;
     		}
+        	System.out.println("false: " + type + ((ITransmitter<?>)tileEntity).getTransmissionType());
     	}
-    	
     	return false;
     }
     

@@ -213,7 +213,7 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 		{
 			ITransmitter<EnergyNetwork> conductor = (ITransmitter<EnergyNetwork>)it.next();
 
-			if(conductor == null || ((TileEntity)conductor).isInvalid())
+			if(!(conductor instanceof TileEntity) || ((TileEntity)conductor).isInvalid())
 			{
 				it.remove();
 				transmitters.remove(conductor);

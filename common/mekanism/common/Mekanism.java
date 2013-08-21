@@ -672,6 +672,7 @@ public class Mekanism
 		Item.itemsList[oreBlockID] = new ItemBlockOre(oreBlockID - 256, OreBlock).setUnlocalizedName("OreBlock");
 		Item.itemsList[energyCubeID] = new ItemBlockEnergyCube(energyCubeID - 256, EnergyCube).setUnlocalizedName("EnergyCube");
 		Item.itemsList[transmitterID] = new ItemBlockTransmitter(transmitterID - 256, Transmitter).setUnlocalizedName("Transmitter");
+		//Item.itemsList[4096] = new ItemTransmitterPart(4096-256).setUnlocalizedName("MultipartTransmitter");
 	}
 	
 	/**
@@ -1153,6 +1154,8 @@ public class Mekanism
 	@EventHandler
 	public void init(FMLInitializationEvent event) 
 	{
+		new MekanismMultipart().init();
+		
 		//Register the mod's ore handler
 		GameRegistry.registerWorldGenerator(new OreHandler());
 		
