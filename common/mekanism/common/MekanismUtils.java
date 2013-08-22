@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import codechicken.multipart.TileMultipart;
 import mekanism.api.EnumColor;
 import mekanism.api.IConfigurable;
 import mekanism.api.ITransmitter;
@@ -963,13 +964,14 @@ public final class MekanismUtils
     
     public static boolean checkTransmissionType(TileEntity tileEntity, TransmissionType type)
     {
+    	if(tileEntity instanceof TileMultipart && ((TileMultipart)tileEntity).jPartList().size() <= 0)
+    		return false;
     	if(tileEntity instanceof ITransmitter)
     	{
     		if(((ITransmitter<?>)tileEntity).getTransmissionType() == type)
     		{
     			return true;
     		}
-        	System.out.println("false: " + type + ((ITransmitter<?>)tileEntity).getTransmissionType());
     	}
     	return false;
     }

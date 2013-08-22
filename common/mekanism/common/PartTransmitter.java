@@ -114,16 +114,16 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 			
 			if(connectedNets.size() == 0 || getWorld().isRemote)
 			{
-				theNetwork = new EnergyNetwork((Collection<ITransmitter<EnergyNetwork>>)Collections.singletonList((ITransmitter<EnergyNetwork>)this));
+				theNetwork = new EnergyNetwork((Collection<ITransmitter<EnergyNetwork>>)Collections.singletonList((ITransmitter<EnergyNetwork>)getTile()));
 			}
 			else if(connectedNets.size() == 1)
 			{
 				theNetwork = connectedNets.iterator().next();
-				theNetwork.transmitters.add(this);
+				theNetwork.transmitters.add((ITransmitter<EnergyNetwork>)getTile());
 			}
 			else {
 				theNetwork = new EnergyNetwork(connectedNets);
-				theNetwork.transmitters.add(this);
+				theNetwork.transmitters.add((ITransmitter<EnergyNetwork>)getTile());
 			}
 		}
 		
@@ -133,7 +133,25 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	@Override
 	public void fixNetwork()
 	{
-		getNetwork().fixMessedUpNetwork(this);
+		getNetwork().fixMessedUpNetwork((ITransmitter<EnergyNetwork>)getTile());
+	}
+	
+	@Override
+	public void onWorldJoin()
+	{
+		if(!getWorld().isRemote)
+		{
+			refreshNetwork();
+		}
+	}
+	
+	@Override
+	public void onNeighborChanged()
+	{
+		if(!getWorld().isRemote)
+		{
+			refreshNetwork();
+		}
 	}
 	
 	@Override
@@ -141,7 +159,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	{
 		if(!getWorld().isRemote)
 		{
-			getNetwork().split(this);
+			getNetwork().split((ITransmitter<EnergyNetwork>)getTile());
 		}
 		
 		super.onWorldSeparate();
@@ -152,7 +170,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	{
 		if(theNetwork != null)
 		{
-			theNetwork.removeTransmitter(this);
+			theNetwork.removeTransmitter((ITransmitter<EnergyNetwork>)getTile());
 		}
 	}
 

@@ -11,7 +11,7 @@ import codechicken.multipart.TMultiPart;
 public class MekanismMultipart implements IPartFactory
 {
 	@Override
-	public TMultiPart createPart(String name, boolean arg1)
+	public TMultiPart createPart(String name, boolean client)
 	{
 		if(name == "mek_transmitter") return new PartTransmitter();
 		
@@ -24,7 +24,7 @@ public class MekanismMultipart implements IPartFactory
                 "mek_transmitter"
             });
         
-        MultipartGenerator.registerTrait("mekanism.common.IEnergyTransmitter", "mekanism.common.TEnergyTransmitter");
+        MultipartGenerator.registerPassThroughInterface("mekanism.common.IEnergyTransmitter");
 
 	}
 
