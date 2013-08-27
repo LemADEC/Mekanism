@@ -24,7 +24,7 @@ public class MekanismMultipart implements IPartFactory
                 "mek_transmitter"
             });
         
-        MultipartGenerator.registerPassThroughInterface("mekanism.common.IEnergyTransmitter");
+        MultipartGenerator.registerPassThroughInterface("mekanism.api.transmitters.ITransmitter");
 
 	}
 

@@ -3,35 +3,23 @@ package mekanism.common;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-
-import org.lwjgl.opengl.GL11;
+import java.util.Set;
 
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 import mekanism.api.transmitters.ITransmitter;
 import mekanism.api.transmitters.TransmissionType;
 import mekanism.api.Object3D;
 import mekanism.client.render.tileentity.RenderUniversalCable;
 import mekanism.common.tileentity.TileEntityUniversalCable;
 import mekanism.common.util.CableUtils;
-import codechicken.lib.lighting.LazyLightMatrix;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.IUVTransformation;
-import codechicken.lib.render.IconTransformation;
+import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.TransformationList;
-import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
@@ -42,25 +30,55 @@ import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TSlottedPart, IEnergyTransmitter, IPowerReceptor
+public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TSlottedPart, ITransmitter<EnergyNetwork>, IPowerReceptor
 {
 
 	private EnergyNetwork theNetwork;
 	private PowerHandler powerHandler;
 	private float energyScale = 0.5F;
 	public static RenderUniversalCable renderer = null;
+	public static IndexedCuboid6[] sides = new IndexedCuboid6[7];
 	
 	public PartTransmitter()
 	{
 		super();
 		if(renderer == null) renderer = (RenderUniversalCable) TileEntityRenderer.instance.specialRendererMap.get(TileEntityUniversalCable.class);
-
+		sides[0] = new IndexedCuboid6(0, new Cuboid6(0.3, 0.0, 0.3, 0.7, 0.3, 0.7));
+		sides[1] = new IndexedCuboid6(1, new Cuboid6(0.3, 0.7, 0.3, 0.7, 1.0, 0.7));
+		sides[2] = new IndexedCuboid6(2, new Cuboid6(0.3, 0.3, 0.0, 0.7, 0.7, 0.3));
+		sides[3] = new IndexedCuboid6(3, new Cuboid6(0.3, 0.3, 0.7, 0.7, 0.7, 1.0));
+		sides[4] = new IndexedCuboid6(4, new Cuboid6(0.0, 0.3, 0.3, 0.3, 0.7, 0.7));
+		sides[5] = new IndexedCuboid6(5, new Cuboid6(0.7, 0.3, 0.3, 1.0, 0.7, 0.7));
+		sides[6] = new IndexedCuboid6(6, new Cuboid6(0.3, 0.3, 0.3, 0.7, 0.7, 0.7));
 	}
 
 	@Override
 	public Cuboid6 getBounds()
 	{
-		return new Cuboid6(0.3, 0.3, 0.3, 0.7, 0.7, 0.7);
+		double minx = 0.3, miny = 0.3, minz = 0.3;
+		double maxx = 0.7, maxy = 0.7, maxz = 0.7;
+		boolean[] connections = CableUtils.getConnections(getTile());
+		if(connections[0]) miny = 0.0;
+		if(connections[1]) miny = 1.0;
+		if(connections[2]) minz = 0.0;
+		if(connections[3]) maxz = 1.0;
+		if(connections[4]) minx = 0.0;
+		if(connections[5]) maxx = 1.0;
+		return new Cuboid6(minx, miny, minz, maxx, maxy, maxz);
+	}
+	
+	@Override
+	public Iterable<IndexedCuboid6> getSubParts()
+	{
+		Set<IndexedCuboid6> subParts = new HashSet<IndexedCuboid6>();
+		boolean[] connections = CableUtils.getConnections(getTile());
+		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS)
+		{
+			int ord = side.ordinal();
+			if(connections[ord]) subParts.add(sides[ord]);
+		}
+		subParts.add(sides[6]);
+		return subParts;
 	}
 
 	@Override
@@ -79,7 +97,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	@Override
 	public Iterable<Cuboid6> getOcclusionBoxes()
 	{
-		return Collections.singletonList(getBounds());
+		return Collections.singletonList((Cuboid6)sides[6]);
 	}
 	
 	@Override
