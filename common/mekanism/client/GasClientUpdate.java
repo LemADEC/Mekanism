@@ -2,10 +2,11 @@ package mekanism.client;
 
 import java.util.List;
 
-import mekanism.api.EnumGas;
-import mekanism.api.GasNetwork.NetworkFinder;
+import mekanism.api.gas.EnumGas;
+import mekanism.api.transmitters.TransmissionType;
+import mekanism.api.transmitters.DynamicNetwork.NetworkFinder;
 import mekanism.api.Object3D;
-import mekanism.common.TileEntityPressurizedTube;
+import mekanism.common.tileentity.TileEntityPressurizedTube;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -21,7 +22,7 @@ public class GasClientUpdate
 	{
 		worldObj = head.worldObj;
 		gasType = type;
-		finder = new NetworkFinder(head.worldObj, Object3D.get(head));
+		finder = new NetworkFinder(head.worldObj, TransmissionType.GAS, Object3D.get(head));
 	}
 	
 	public void clientUpdate()

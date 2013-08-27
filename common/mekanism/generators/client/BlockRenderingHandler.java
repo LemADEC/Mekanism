@@ -1,9 +1,15 @@
 package mekanism.generators.client;
 
-import mekanism.client.MekanismRenderer;
-import mekanism.common.MekanismUtils;
-import mekanism.common.MekanismUtils.ResourceType;
-import mekanism.generators.common.BlockGenerator.GeneratorType;
+import mekanism.client.render.MekanismRenderer;
+import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.ModelAdvancedSolarGenerator;
+import mekanism.generators.client.model.ModelBioGenerator;
+import mekanism.generators.client.model.ModelElectrolyticSeparator;
+import mekanism.generators.client.model.ModelHeatGenerator;
+import mekanism.generators.client.model.ModelHydrogenGenerator;
+import mekanism.generators.client.model.ModelWindTurbine;
+import mekanism.generators.common.block.BlockGenerator.GeneratorType;
 import mekanism.generators.common.MekanismGenerators;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -12,7 +18,6 @@ import net.minecraft.world.IBlockAccess;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

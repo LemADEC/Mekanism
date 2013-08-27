@@ -9,21 +9,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import mekanism.api.GasNetwork.GasTransferEvent;
-import mekanism.api.InfuseObject;
-import mekanism.api.InfuseRegistry;
-import mekanism.api.InfuseType;
-import mekanism.api.InfusionInput;
+import mekanism.api.gas.GasNetwork.GasTransferEvent;
+import mekanism.api.infuse.InfuseObject;
+import mekanism.api.infuse.InfuseRegistry;
+import mekanism.api.infuse.InfuseType;
+import mekanism.api.infuse.InfusionInput;
+import mekanism.api.transmitters.TransmitterNetworkRegistry;
 import mekanism.api.Object3D;
-import mekanism.api.TransmitterNetworkRegistry;
-import mekanism.client.SoundHandler;
+import mekanism.client.sound.SoundHandler;
 import mekanism.common.EnergyNetwork.EnergyTransferEvent;
 import mekanism.common.FluidNetwork.FluidTransferEvent;
 import mekanism.common.IFactory.RecipeType;
-import mekanism.common.MekanismUtils.ResourceType;
 import mekanism.common.PacketHandler.Transmission;
 import mekanism.common.Tier.EnergyCubeTier;
 import mekanism.common.Tier.FactoryTier;
+import mekanism.common.block.BlockBasic;
+import mekanism.common.block.BlockBounding;
+import mekanism.common.block.BlockEnergyCube;
+import mekanism.common.block.BlockGasTank;
+import mekanism.common.block.BlockMachine;
+import mekanism.common.block.BlockObsidianTNT;
+import mekanism.common.block.BlockOre;
+import mekanism.common.block.BlockTransmitter;
+import mekanism.common.item.ItemAtomicDisassembler;
+import mekanism.common.item.ItemBlockBasic;
+import mekanism.common.item.ItemBlockEnergyCube;
+import mekanism.common.item.ItemBlockMachine;
+import mekanism.common.item.ItemBlockOre;
+import mekanism.common.item.ItemBlockTransmitter;
+import mekanism.common.item.ItemClump;
+import mekanism.common.item.ItemConfigurator;
+import mekanism.common.item.ItemDirtyDust;
+import mekanism.common.item.ItemDust;
+import mekanism.common.item.ItemElectricBow;
+import mekanism.common.item.ItemEnergized;
+import mekanism.common.item.ItemIngot;
+import mekanism.common.item.ItemMachineUpgrade;
+import mekanism.common.item.ItemMekanism;
+import mekanism.common.item.ItemNetworkReader;
+import mekanism.common.item.ItemPortableTeleporter;
+import mekanism.common.item.ItemRobit;
+import mekanism.common.item.ItemStopwatch;
+import mekanism.common.item.ItemStorageTank;
+import mekanism.common.item.ItemWeatherOrb;
 import mekanism.common.network.PacketConfiguratorState;
 import mekanism.common.network.PacketControlPanel;
 import mekanism.common.network.PacketDataRequest;
@@ -41,6 +69,13 @@ import mekanism.common.network.PacketTime;
 import mekanism.common.network.PacketTransmitterTransferUpdate;
 import mekanism.common.network.PacketTransmitterTransferUpdate.TransmitterTransferType;
 import mekanism.common.network.PacketWeather;
+import mekanism.common.tileentity.TileEntityBoundingBlock;
+import mekanism.common.tileentity.TileEntityControlPanel;
+import mekanism.common.tileentity.TileEntityEnergyCube;
+import mekanism.common.tileentity.TileEntityGasTank;
+import mekanism.common.tileentity.TileEntityTeleporter;
+import mekanism.common.util.MekanismUtils;
+import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -156,7 +191,7 @@ public class Mekanism
 	public static Item PortableTeleporter;
 	public static Item TeleportationCore;
 	public static Item Configurator;
-	public static Item EnergyMeter;
+	public static Item NetworkReader;
 	
 	//Blocks
 	public static Block BasicBlock;
@@ -374,7 +409,7 @@ public class Mekanism
 		CraftingManager.getInstance().getRecipeList().add(new MekanismRecipe(Robit.getUnchargedItem(), new Object[] {
 			" S ", "ECE", "OIO", Character.valueOf('S'), "ingotSteel", Character.valueOf('E'), EnergyTablet.getUnchargedItem(), Character.valueOf('C'), AtomicCore, Character.valueOf('O'), "ingotRefinedObsidian", Character.valueOf('I'), new ItemStack(MachineBlock, 1, 13)
 		}));
-		CraftingManager.getInstance().getRecipeList().add(new MekanismRecipe(new ItemStack(EnergyMeter), new Object[] {
+		CraftingManager.getInstance().getRecipeList().add(new MekanismRecipe(new ItemStack(NetworkReader), new Object[] {
 			" G ", "AEA", " I ", Character.valueOf('G'), Block.glass, Character.valueOf('A'), EnrichedAlloy, Character.valueOf('E'), EnergyTablet.getUnchargedItem(), Character.valueOf('I'), "ingotSteel"
 		}));
 		
@@ -446,6 +481,9 @@ public class Mekanism
         RecipeHandler.addCrusherRecipe(new ItemStack(Block.stoneBrick, 1, 0), new ItemStack(Block.stoneBrick, 1, 2));
         RecipeHandler.addCrusherRecipe(new ItemStack(Block.stoneBrick, 1, 3), new ItemStack(Block.stoneBrick, 1, 0));
         
+        //Purification Chamber Recipes
+        RecipeHandler.addPurificationChamberRecipe(new ItemStack(Block.obsidian), new ItemStack(Clump, 2, 6));
+        
         //Metallurgic Infuser Recipes
         RecipeHandler.addMetallurgicInfuserRecipe(InfusionInput.getInfusion(InfuseRegistry.get("CARBON"), 10, new ItemStack(EnrichedIron)), new ItemStack(Dust, 1, 5));
         
@@ -493,7 +531,7 @@ public class Mekanism
 		LanguageRegistry.addName(PortableTeleporter, "Portable Teleporter");
 		LanguageRegistry.addName(TeleportationCore, "Teleportation Core");
 		LanguageRegistry.addName(Configurator, "Configurator");
-		LanguageRegistry.addName(EnergyMeter, "EnergyMeter");
+		LanguageRegistry.addName(NetworkReader, "NetworkReader");
 		
 		//Localization for BasicBlock
 		LanguageRegistry.instance().addStringLocalization("tile.BasicBlock.OsmiumBlock.name", "Osmium Block");
@@ -559,6 +597,7 @@ public class Mekanism
 		LanguageRegistry.instance().addStringLocalization("item.copperClump.name", "Copper Clump");
 		LanguageRegistry.instance().addStringLocalization("item.tinClump.name", "Tin Clump");
 		LanguageRegistry.instance().addStringLocalization("item.silverClump.name", "Silver Clump");
+		LanguageRegistry.instance().addStringLocalization("item.obsidianClump.name", "Obsidian Clump");
 		
 		//Localization for Dirty Dust
 		LanguageRegistry.instance().addStringLocalization("item.dirtyIronDust.name", "Dirty Iron Dust");
@@ -613,7 +652,7 @@ public class Mekanism
 		Clump = new ItemClump(configuration.getItem("Clump", 11219).getInt()-256);
 		DirtyDust = new ItemDirtyDust(configuration.getItem("DirtyDust", 11220).getInt()-256);
 		Configurator = new ItemConfigurator(configuration.getItem("Configurator", 11221).getInt()).setUnlocalizedName("Configurator");
-		EnergyMeter = new ItemEnergyMeter(configuration.getItem("EnergyMeter", 11222).getInt()).setUnlocalizedName("EnergyMeter");
+		NetworkReader = new ItemNetworkReader(configuration.getItem("NetworkReader", 11222).getInt()).setUnlocalizedName("NetworkReader");
 		configuration.save();
 		
 		//Registrations
@@ -643,7 +682,7 @@ public class Mekanism
 		GameRegistry.registerItem(Clump, "Clump");
 		GameRegistry.registerItem(DirtyDust, "DirtyDust");
 		GameRegistry.registerItem(Configurator, "Configurator");
-		GameRegistry.registerItem(EnergyMeter, "EnergyMeter");
+		GameRegistry.registerItem(NetworkReader, "NetworkReader");
 	}
 	
 	/**
@@ -712,7 +751,7 @@ public class Mekanism
 		OreDictionary.registerOre("dustDirtySilver", new ItemStack(DirtyDust, 1, 5));
 		OreDictionary.registerOre("dustDirtyObsidian", new ItemStack(DirtyDust, 1, 6));
 		
-		//for RailCraft. rc + mek = rawr
+		//for RailCraft/IC2.
 		OreDictionary.registerOre("dustObsidian", new ItemStack(DirtyDust, 1, 6));
 		
 		OreDictionary.registerOre("clumpIron", new ItemStack(Clump, 1, 0));
@@ -721,6 +760,7 @@ public class Mekanism
 		OreDictionary.registerOre("clumpCopper", new ItemStack(Clump, 1, 3));
 		OreDictionary.registerOre("clumpTin", new ItemStack(Clump, 1, 4));
 		OreDictionary.registerOre("clumpSilver", new ItemStack(Clump, 1, 5));
+		OreDictionary.registerOre("clumpObsidian", new ItemStack(Clump, 1, 6));
 		
 		OreDictionary.registerOre("oreOsmium", new ItemStack(OreBlock, 1, 0));
 		
@@ -738,6 +778,7 @@ public class Mekanism
 			CraftingManagers.pulverizerManager.addRecipe(80, new ItemStack(Clump, 1, 3), new ItemStack(DirtyDust, 1, 3), false);
 			CraftingManagers.pulverizerManager.addRecipe(80, new ItemStack(Clump, 1, 4), new ItemStack(DirtyDust, 1, 4), false);
 			CraftingManagers.pulverizerManager.addRecipe(80, new ItemStack(Clump, 1, 5), new ItemStack(DirtyDust, 1, 5), false);
+			
 			System.out.println("[Mekanism] Hooked into Thermal Expansion successfully.");
 		} catch(Exception e) {}
 		
@@ -749,18 +790,14 @@ public class Mekanism
 		OreDictionary.registerOre("itemCompressedCarbon", new ItemStack(CompressedCarbon));
 		OreDictionary.registerOre("itemEnrichedAlloy", new ItemStack(EnrichedAlloy));
 		
-		if(hooks.IC2Loaded)
-		{
-			if(!hooks.RailcraftLoaded)
-			{
-				Recipes.macerator.addRecipe(new ItemStack(Block.obsidian), new ItemStack(DirtyDust, 1, 6));
-			}
-		}
-		
 		for(ItemStack ore : OreDictionary.getOres("dustRefinedObsidian"))
 		{
-			RecipeHandler.addOsmiumCompressorRecipe(MekanismUtils.size(ore, 1), new ItemStack(Ingot, 1, 0));
 			RecipeHandler.addCrusherRecipe(MekanismUtils.size(ore, 1), new ItemStack(DirtyDust, 1, 6));
+		}
+		
+		for(ItemStack ore : OreDictionary.getOres("dustObsidian"))
+		{
+			RecipeHandler.addOsmiumCompressorRecipe(MekanismUtils.size(ore, 2), new ItemStack(Ingot, 1, 0));
 		}
 		
 		for(ItemStack ore : OreDictionary.getOres("clumpIron"))
@@ -791,6 +828,11 @@ public class Mekanism
 		for(ItemStack ore : OreDictionary.getOres("clumpSilver"))
 		{
 			RecipeHandler.addCrusherRecipe(MekanismUtils.size(ore, 1), new ItemStack(DirtyDust, 1, 5));
+		}
+		
+		for(ItemStack ore : OreDictionary.getOres("clumpObsidian"))
+		{
+			RecipeHandler.addCrusherRecipe(MekanismUtils.size(ore, 1), new ItemStack(DirtyDust, 1, 6));
 		}
 		
 		for(ItemStack ore : OreDictionary.getOres("dustDirtyIron"))
@@ -903,7 +945,7 @@ public class Mekanism
 			
 			if(hooks.IC2Loaded)
 			{
-				Recipes.macerator.addRecipe(new ItemStack(Ingot, 1, 2), MekanismUtils.size(OreDictionary.getOres("dustBronze").get(0), 1));
+				Recipes.macerator.addRecipe(new ItemStack(Ingot, 1, 2), null, MekanismUtils.size(OreDictionary.getOres("dustBronze").get(0), 1));
 			}
 			if(hooks.TELoaded)
 			{
@@ -1170,7 +1212,6 @@ public class Mekanism
 		
 		//Register to receive subscribed events
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(new IC2EnergyHandler());
 		
 		//Register with TransmitterNetworkRegistry
 		TransmitterNetworkRegistry.initiate();
@@ -1204,7 +1245,7 @@ public class Mekanism
 		PacketHandler.registerPacket(PacketRedstoneControl.class);
 		
 		//Donators
-		donators.add("mrgreaper");
+		donators.add("mrgreaper"); 
 		
 		//Load proxy
 		proxy.registerRenderInformation();

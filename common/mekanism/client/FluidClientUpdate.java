@@ -2,9 +2,10 @@ package mekanism.client;
 
 import java.util.List;
 
+import mekanism.api.transmitters.TransmissionType;
+import mekanism.api.transmitters.DynamicNetwork.NetworkFinder;
 import mekanism.api.Object3D;
-import mekanism.common.FluidNetwork.NetworkFinder;
-import mekanism.common.TileEntityMechanicalPipe;
+import mekanism.common.tileentity.TileEntityMechanicalPipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
@@ -21,7 +22,7 @@ public class FluidClientUpdate
 	{
 		worldObj = head.worldObj;
 		fluidStack = fluid;
-		finder = new NetworkFinder(head.worldObj, Object3D.get(head));
+		finder = new NetworkFinder(head.worldObj, TransmissionType.FLUID, Object3D.get(head));
 	}
 	
 	public void clientUpdate()

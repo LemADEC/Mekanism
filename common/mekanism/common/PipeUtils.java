@@ -2,9 +2,9 @@ package mekanism.common;
 
 import java.util.Arrays;
 
-import mekanism.api.ITransmitter;
 import mekanism.api.Object3D;
-import mekanism.api.TransmissionType;
+import mekanism.api.transmitters.ITransmitter;
+import mekanism.api.transmitters.TransmissionType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -25,7 +25,7 @@ public final class PipeUtils
     	{
 			TileEntity pipe = Object3D.get(tileEntity).getFromSide(orientation).getTileEntity(tileEntity.worldObj);
 			
-			if(MekanismUtils.checkTransmissionType(pipe, TransmissionType.FLUID))
+			if(TransmissionType.checkTransmissionType(pipe, TransmissionType.FLUID))
 			{
 				pipes[orientation.ordinal()] = pipe;
 			}

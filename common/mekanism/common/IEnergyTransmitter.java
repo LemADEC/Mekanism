@@ -1,6 +1,6 @@
 package mekanism.common;
 
-import mekanism.api.ITransmitter;
+import mekanism.api.transmitters.ITransmitter;
 
 public interface IEnergyTransmitter extends ITransmitter<EnergyNetwork>
 {

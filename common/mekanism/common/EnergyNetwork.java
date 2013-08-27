@@ -11,17 +11,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import mekanism.api.DynamicNetwork;
-import mekanism.api.IStrictEnergyAcceptor;
-import mekanism.api.ITransmitter;
 import mekanism.api.Object3D;
-import mekanism.api.TransmissionType;
+import mekanism.api.energy.IStrictEnergyAcceptor;
+import mekanism.api.transmitters.DynamicNetwork;
+import mekanism.api.transmitters.ITransmitter;
+import mekanism.api.transmitters.TransmissionType;
+import mekanism.common.util.CableUtils;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.Event;
 import universalelectricity.core.block.IElectrical;
+import universalelectricity.core.electricity.ElectricityDisplay;
 import universalelectricity.core.electricity.ElectricityPack;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -61,7 +62,7 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 		register();
 	}
 	
-	public double getEnergyNeeded(ArrayList<TileEntity> ignored)
+	public double getEnergyNeeded(List<TileEntity> ignored)
 	{
 		double totalNeeded = 0;
 		
@@ -75,7 +76,7 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 				}
 				else if(acceptor instanceof IEnergySink)
 				{
-					totalNeeded += Math.min((((IEnergySink)acceptor).demandsEnergy()*Mekanism.FROM_IC2), (((IEnergySink)acceptor).getMaxSafeInput()*Mekanism.FROM_IC2));
+					totalNeeded += Math.min((((IEnergySink)acceptor).demandedEnergyUnits()*Mekanism.FROM_IC2), (((IEnergySink)acceptor).getMaxSafeInput()*Mekanism.FROM_IC2));
 				}
 				else if(acceptor instanceof IPowerReceptor && Mekanism.hooks.BuildCraftLoaded)
 				{
@@ -122,7 +123,7 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 					else if(acceptor instanceof IEnergySink)
 					{
 						double toSend = Math.min(currentSending, (((IEnergySink)acceptor).getMaxSafeInput()*Mekanism.FROM_IC2));
-						energyToSend -= (toSend - (((IEnergySink)acceptor).injectEnergy(MekanismUtils.toIC2Direction(acceptorDirections.get(acceptor).getOpposite()), (int)(toSend*Mekanism.TO_IC2))*Mekanism.FROM_IC2));
+						energyToSend -= (toSend - (((IEnergySink)acceptor).injectEnergyUnits(acceptorDirections.get(acceptor).getOpposite(), toSend*Mekanism.TO_IC2)*Mekanism.FROM_IC2));
 					}
 					else if(acceptor instanceof IPowerReceptor && Mekanism.hooks.BuildCraftLoaded)
 					{
@@ -167,9 +168,9 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 			}
 			else if(acceptor instanceof IEnergySink)
 			{
-				if(((IEnergySink)acceptor).acceptsEnergyFrom(null, MekanismUtils.toIC2Direction(acceptorDirections.get(acceptor)).getInverse()))
+				if(((IEnergySink)acceptor).acceptsEnergyFrom(null, acceptorDirections.get(acceptor).getOpposite()))
 				{
-					if(Math.min((((IEnergySink)acceptor).demandsEnergy()*Mekanism.FROM_IC2), (((IEnergySink)acceptor).getMaxSafeInput()*Mekanism.FROM_IC2)) > 0)
+					if(Math.min((((IEnergySink)acceptor).demandedEnergyUnits()*Mekanism.FROM_IC2), (((IEnergySink)acceptor).getMaxSafeInput()*Mekanism.FROM_IC2)) > 0)
 					{
 						toReturn.add(acceptor);
 					}
@@ -219,7 +220,7 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 				transmitters.remove(conductor);
 			}
 			else {
-				conductor.setNetwork(this);
+				conductor.setTransmitterNetwork(this);
 			}
 		}
 		
@@ -257,149 +258,6 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 			networks.add(network);
 			EnergyNetwork newNetwork = new EnergyNetwork(networks);
 			newNetwork.refresh();
-		}
-	}
-
-	@Override
-	public void split(ITransmitter<EnergyNetwork> splitPoint)
-	{
-		if(splitPoint instanceof TileEntity)
-		{
-			removeTransmitter(splitPoint);
-			
-			TileEntity[] connectedBlocks = new TileEntity[6];
-			boolean[] dealtWith = {false, false, false, false, false, false};
-			
-			for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS)
-			{
-				TileEntity sideTile = Object3D.get((TileEntity)splitPoint).getFromSide(direction).getTileEntity(((TileEntity)splitPoint).worldObj);
-				
-				if(sideTile != null)
-				{
-					connectedBlocks[Arrays.asList(ForgeDirection.values()).indexOf(direction)] = sideTile;
-				}
-			}
-
-			for(int countOne = 0; countOne < connectedBlocks.length; countOne++)
-			{
-				TileEntity connectedBlockA = connectedBlocks[countOne];
-
-				if(MekanismUtils.checkTransmissionType(connectedBlockA, TransmissionType.ENERGY) && !dealtWith[countOne])
-				{
-					NetworkFinder finder = new NetworkFinder(((TileEntity)splitPoint).worldObj, Object3D.get(connectedBlockA), Object3D.get((TileEntity)splitPoint));
-					List<Object3D> partNetwork = finder.exploreNetwork();
-					
-					for(int countTwo = countOne + 1; countTwo < connectedBlocks.length; countTwo++)
-					{
-						TileEntity connectedBlockB = connectedBlocks[countTwo];
-						
-						if(MekanismUtils.checkTransmissionType(connectedBlockB, TransmissionType.ENERGY) && !dealtWith[countTwo])
-						{
-							if(partNetwork.contains(Object3D.get(connectedBlockB)))
-							{
-								dealtWith[countTwo] = true;
-							}
-						}
-					}
-					
-					Set<ITransmitter<EnergyNetwork>> newNetCables = new HashSet<ITransmitter<EnergyNetwork>>();
-					
-					for(Object3D node : finder.iterated)
-					{
-						TileEntity nodeTile = node.getTileEntity(((TileEntity)splitPoint).worldObj);
-
-						if(MekanismUtils.checkTransmissionType(nodeTile, TransmissionType.ENERGY))
-						{
-							if(nodeTile != splitPoint)
-							{
-								newNetCables.add((ITransmitter<EnergyNetwork>)nodeTile);
-							}
-						}
-					}
-					
-					EnergyNetwork newNetwork = new EnergyNetwork(newNetCables);					
-					newNetwork.refresh();
-				}
-			}
-			
-			deregister();
-		}
-	}
-	
-	@Override
-	public void fixMessedUpNetwork(ITransmitter<EnergyNetwork> cable)
-	{
-		if(cable instanceof TileEntity)
-		{
-			NetworkFinder finder = new NetworkFinder(((TileEntity)cable).getWorldObj(), Object3D.get((TileEntity)cable), null);
-			List<Object3D> partNetwork = finder.exploreNetwork();
-			Set<ITransmitter<EnergyNetwork>> newCables = new HashSet<ITransmitter<EnergyNetwork>>();
-			
-			for(Object3D node : partNetwork)
-			{
-				TileEntity nodeTile = node.getTileEntity(((TileEntity)cable).worldObj);
-
-				if(nodeTile instanceof ITransmitter)
-				{
-					((ITransmitter<EnergyNetwork>)nodeTile).removeFromNetwork();
-					newCables.add((ITransmitter<EnergyNetwork>)nodeTile);
-				}
-			}
-			
-			EnergyNetwork newNetwork = new EnergyNetwork(newCables);
-			newNetwork.refresh();
-			newNetwork.fixed = true;
-			deregister();
-		}
-	}
-	
-	public static class NetworkFinder
-	{
-		public World worldObj;
-		public Object3D start;
-		
-		public List<Object3D> iterated = new ArrayList<Object3D>();
-		public List<Object3D> toIgnore = new ArrayList<Object3D>();
-		
-		public NetworkFinder(World world, Object3D location, Object3D... ignore)
-		{
-			worldObj = world;
-			start = location;
-			
-			if(ignore != null)
-			{
-				toIgnore = Arrays.asList(ignore);
-			}
-		}
-
-		public void loopAll(Object3D location)
-		{
-			if(MekanismUtils.checkTransmissionType(location.getTileEntity(worldObj), TransmissionType.ENERGY))
-			{
-				iterated.add(location);
-			}
-			
-			for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS)
-			{
-				Object3D obj = location.getFromSide(direction);
-				
-				if(!iterated.contains(obj) && !toIgnore.contains(obj))
-				{
-					TileEntity tileEntity = obj.getTileEntity(worldObj);
-					
-					if(MekanismUtils.checkTransmissionType(tileEntity, TransmissionType.ENERGY))
-					{
-						loopAll(obj);
-					}
-				}
-			}
-		}
-
-		public List<Object3D> exploreNetwork()
-		{
-			loopAll(start);
-			
-			return iterated;
 		}
 	}
 	
@@ -453,5 +311,41 @@ public class EnergyNetwork extends DynamicNetwork<TileEntity, EnergyNetwork>
 	public double getPower()
 	{
 		return joulesLastTick * 20;
+	}
+	
+	@Override
+	protected EnergyNetwork create(ITransmitter<EnergyNetwork>... varTransmitters) 
+	{
+		return new EnergyNetwork(varTransmitters);
+	}
+
+	@Override
+	protected EnergyNetwork create(Collection<ITransmitter<EnergyNetwork>> collection) 
+	{
+		return new EnergyNetwork(collection);
+	}
+
+	@Override
+	protected EnergyNetwork create(Set<EnergyNetwork> networks) 
+	{
+		return new EnergyNetwork(networks);
+	}
+	
+	@Override
+	public TransmissionType getTransmissionType()
+	{
+		return TransmissionType.ENERGY;
+	}
+	
+	@Override
+	public String getNeeded()
+	{
+		return ElectricityDisplay.getDisplay((float)(getEnergyNeeded(new ArrayList<TileEntity>())*Mekanism.TO_UE), ElectricityDisplay.ElectricUnit.JOULES);
+	}
+
+	@Override
+	public String getFlow()
+	{
+		return ElectricityDisplay.getDisplay((float)(getPower()*Mekanism.TO_UE), ElectricityDisplay.ElectricUnit.WATT);
 	}
 }

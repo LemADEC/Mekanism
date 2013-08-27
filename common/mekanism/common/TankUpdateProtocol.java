@@ -5,6 +5,9 @@ import java.util.Set;
 
 import mekanism.api.Object3D;
 import mekanism.common.SynchronizedTankData.ValveData;
+import mekanism.common.tileentity.TileEntityDynamicTank;
+import mekanism.common.tileentity.TileEntityDynamicValve;
+import mekanism.common.util.MekanismUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
