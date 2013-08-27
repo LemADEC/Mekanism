@@ -9,6 +9,7 @@ import mekanism.client.render.MekanismRenderer.BooleanArray;
 import mekanism.client.render.MekanismRenderer.DisplayInteger;
 import mekanism.client.render.MekanismRenderer.Model3D;
 import mekanism.common.Mekanism;
+import mekanism.common.PartTransmitter;
 import mekanism.common.tileentity.TileEntityUniversalCable;
 import mekanism.common.util.CableUtils;
 import mekanism.common.util.MekanismUtils;
@@ -55,6 +56,56 @@ public class RenderUniversalCable extends TileEntitySpecialRenderer
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		
 		connectable = CableUtils.getConnections(tileEntity);
+		
+		model.renderCenter(connectable);
+		for(int i = 0; i < 6; i++)
+		{
+			model.renderSide(ForgeDirection.getOrientation(i), connectable[i]);
+		}
+		
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glPopMatrix();
+
+		if(tileEntity.getEnergyScale() <= 0 || !Mekanism.fancyUniversalCableRender)
+		{
+			return;
+		}
+		
+		push();
+		
+		MekanismRenderer.glowOn();
+		GL11.glColor4f(1.F, 1.F, 1.F, tileEntity.getEnergyScale());
+		func_110628_a(MekanismUtils.getResource(ResourceType.TEXTURE_ITEMS, "LiquidEnergy.png"));
+		GL11.glTranslatef((float)x, (float)y, (float)z);
+		
+		if(energy == null)
+		{
+			energy = assignEnergy();
+		}
+		
+		for(int i = 0; i < 6; i++)
+		{
+			if(connectable[i])
+			{
+				renderEnergy(ForgeDirection.getOrientation(i));
+			}
+		}
+		
+		renderEnergy(ForgeDirection.UNKNOWN);
+		
+		MekanismRenderer.glowOff();
+		pop();
+	}
+	
+	public void renderAModelAt(PartTransmitter tileEntity, double x, double y, double z, float partialTick)
+	{
+		func_110628_a(MekanismUtils.getResource(ResourceType.RENDER, "UniversalCable.png"));
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F);
+		GL11.glScalef(1.0F, -1F, -1F);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		
+		connectable = CableUtils.getConnections(tileEntity.getTile());
 		
 		model.renderCenter(connectable);
 		for(int i = 0; i < 6; i++)

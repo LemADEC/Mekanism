@@ -23,6 +23,8 @@ import mekanism.api.transmitters.ITransmitter;
 import mekanism.api.transmitters.TransmissionType;
 import mekanism.api.Object3D;
 import mekanism.client.render.tileentity.RenderUniversalCable;
+import mekanism.common.tileentity.TileEntityUniversalCable;
+import mekanism.common.util.CableUtils;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IUVTransformation;
@@ -35,7 +37,6 @@ import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
-import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
@@ -46,7 +47,15 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 
 	private EnergyNetwork theNetwork;
 	private PowerHandler powerHandler;
-	private float energyScale;
+	private float energyScale = 0.5F;
+	public static RenderUniversalCable renderer = null;
+	
+	public PartTransmitter()
+	{
+		super();
+		if(renderer == null) renderer = (RenderUniversalCable) TileEntityRenderer.instance.specialRendererMap.get(TileEntityUniversalCable.class);
+
+	}
 
 	@Override
 	public Cuboid6 getBounds()
@@ -62,14 +71,9 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderStatic(Vector3 pos, LazyLightMatrix mat, int pass)
+	public void renderDynamic(Vector3 pos, float f, int pass)
 	{
-		CCModel cc = CCModel.quadModel(24).generateBox(0, 5, 5, 5, 6, 6, 6, 0, 0, 64, 64, 16);
-        TransformationList tl = new TransformationList();
-        tl.with(new Translation(pos));
-
-        IUVTransformation uv = new IconTransformation(Mekanism.Transmitter.getIcon(0, 0));
-        cc.render(0, cc.verts.length, tl, uv, null);
+		renderer.renderAModelAt(this, pos.x, pos.y, pos.z, f);x();
 	}
 
 	@Override
@@ -97,7 +101,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	}
 	
 	@Override
-	public EnergyNetwork getNetwork(boolean createIfNull)
+	public EnergyNetwork getTransmitterNetwork(boolean createIfNull)
 	{
 		if(theNetwork == null && createIfNull)
 		{
@@ -106,9 +110,9 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 			
 			for(TileEntity cable : adjacentCables)
 			{
-				if(MekanismUtils.checkTransmissionType(cable, TransmissionType.ENERGY) && ((ITransmitter<EnergyNetwork>)cable).getNetwork(false) != null)
+				if(TransmissionType.checkTransmissionType(cable, TransmissionType.ENERGY) && ((ITransmitter<EnergyNetwork>)cable).getTransmitterNetwork(false) != null)
 				{
-					connectedNets.add(((ITransmitter<EnergyNetwork>)cable).getNetwork());
+					connectedNets.add(((ITransmitter<EnergyNetwork>)cable).getTransmitterNetwork());
 				}
 			}
 			
@@ -131,9 +135,9 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	}
 	
 	@Override
-	public void fixNetwork()
+	public void fixTransmitterNetwork()
 	{
-		getNetwork().fixMessedUpNetwork((ITransmitter<EnergyNetwork>)getTile());
+		getTransmitterNetwork().fixMessedUpNetwork((ITransmitter<EnergyNetwork>)getTile());
 	}
 	
 	@Override
@@ -141,7 +145,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	{
 		if(!getWorld().isRemote)
 		{
-			refreshNetwork();
+			refreshTransmitterNetwork();
 		}
 	}
 	
@@ -150,7 +154,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	{
 		if(!getWorld().isRemote)
 		{
-			refreshNetwork();
+			refreshTransmitterNetwork();
 		}
 	}
 	
@@ -159,14 +163,14 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	{
 		if(!getWorld().isRemote)
 		{
-			getNetwork().split((ITransmitter<EnergyNetwork>)getTile());
+			getTransmitterNetwork().split((ITransmitter<EnergyNetwork>)getTile());
 		}
 		
 		super.onWorldSeparate();
 	}
 	
 	@Override
-	public void removeFromNetwork()
+	public void removeFromTransmitterNetwork()
 	{
 		if(theNetwork != null)
 		{
@@ -175,7 +179,7 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	}
 
 	@Override
-	public void refreshNetwork() 
+	public void refreshTransmitterNetwork() 
 	{
 		if(!getWorld().isRemote)
 		{
@@ -183,13 +187,13 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 			{
 				TileEntity tileEntity = Object3D.get(getTile()).getFromSide(side).getTileEntity(getWorld());
 				
-				if(MekanismUtils.checkTransmissionType(tileEntity, TransmissionType.ENERGY))
+				if(TransmissionType.checkTransmissionType(tileEntity, TransmissionType.ENERGY))
 				{
-					getNetwork().merge(((ITransmitter<EnergyNetwork>)tileEntity).getNetwork());
+					getTransmitterNetwork().merge(((ITransmitter<EnergyNetwork>)tileEntity).getTransmitterNetwork());
 				}
 			}
 			
-			getNetwork().refresh();
+			getTransmitterNetwork().refresh();
 		}
 	}
 
@@ -218,25 +222,49 @@ public class PartTransmitter extends JCuboidPart implements JNormalOcclusion, TS
 	}
 	
 	@Override
-	public void setNetwork(EnergyNetwork network)
+	public void setTransmitterNetwork(EnergyNetwork network)
 	{
 		if(network != theNetwork)
 		{
-			removeFromNetwork();
+			removeFromTransmitterNetwork();
 			theNetwork = network;
 		}
 	}
 	
 	@Override
-	public boolean areNetworksEqual(TileEntity tileEntity)
+	public boolean areTransmitterNetworksEqual(TileEntity tileEntity)
 	{
 		return tileEntity instanceof ITransmitter && getTransmissionType() == ((ITransmitter)tileEntity).getTransmissionType();
 	}
 	
 	@Override
-	public EnergyNetwork getNetwork()
+	public EnergyNetwork getTransmitterNetwork()
 	{
-		return getNetwork(true);
+		return getTransmitterNetwork(true);
+	}
+
+	@Override
+	public int getTransmitterNetworkSize()
+	{
+		return getTransmitterNetwork().getSize();
+	}
+
+	@Override
+	public int getTransmitterNetworkAcceptorSize()
+	{
+		return getTransmitterNetwork().getAcceptorSize();
+	}
+
+	@Override
+	public String getTransmitterNetworkNeeded()
+	{
+		return getTransmitterNetwork().getNeeded();
+	}
+
+	@Override
+	public String getTransmitterNetworkFlow()
+	{
+		return getTransmitterNetwork().getFlow();
 	}
 
 }
