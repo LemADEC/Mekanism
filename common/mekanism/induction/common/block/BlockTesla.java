@@ -96,7 +96,7 @@ public class BlockTesla extends Block implements ITileEntityProvider
 							{
 								tileEntity.setLink(Object3D.get(((TileEntityTesla) linkObj.getTileEntity(otherWorld)).getTopTelsa()), dimID, true);
 
-								entityPlayer.addChatMessage("Linked " + this.getLocalizedName() + " with " + " [" + (int) linkObj.xCoord + ", " + (int) linkObj.yCoord + ", " + (int) linkObj.zCoord + "]");
+								entityPlayer.addChatMessage("Linked " + this.getLocalizedName() + " with " + " [" + (int) linkObj.x + ", " + (int) linkObj.y + ", " + (int) linkObj.z + "]");
 
 								link.clearLink(entityPlayer.getCurrentEquippedItem());
 								world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, "ambient.weather.thunder", 5, 1);

@@ -49,7 +49,7 @@ public class PacketPortableTeleport implements IMekanismPacket
 					((EntityPlayerMP)player).travelToDimension(coords.dimensionId);
 				}
 				
-				((EntityPlayerMP)player).playerNetServerHandler.setPlayerLocation(coords.xCoord+0.5, coords.yCoord+1, coords.zCoord+0.5, player.rotationYaw, player.rotationPitch);
+				((EntityPlayerMP)player).playerNetServerHandler.setPlayerLocation(coords.x+0.5, coords.y+1, coords.z+0.5, player.rotationYaw, player.rotationPitch);
 				
 				world.playSoundAtEntity(player, "mob.endermen.portal", 1.0F, 1.0F);
 				PacketHandler.sendPacket(Transmission.CLIENTS_RANGE, new PacketPortalFX().setParams(coords), coords, 40D);

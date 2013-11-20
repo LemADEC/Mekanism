@@ -102,11 +102,11 @@ public class PacketDigitalMinerGui implements IMekanismPacket
 				try {
 					if(packetType == MinerGuiPacket.CLIENT)
 					{
-						FMLCommonHandler.instance().showGuiScreen(getGui(packetType, type, player, world, object3D.xCoord, object3D.yCoord, object3D.zCoord, -1));
+						FMLCommonHandler.instance().showGuiScreen(getGui(packetType, type, player, world, object3D.x, object3D.y, object3D.z, -1));
 					}
 					else if(packetType == MinerGuiPacket.CLIENT_INDEX)
 					{
-						FMLCommonHandler.instance().showGuiScreen(getGui(packetType, type, player, world, object3D.xCoord, object3D.yCoord, object3D.zCoord, index));
+						FMLCommonHandler.instance().showGuiScreen(getGui(packetType, type, player, world, object3D.x, object3D.y, object3D.z, index));
 					}
 					
 					player.openContainer.windowId = windowId;
@@ -198,9 +198,9 @@ public class PacketDigitalMinerGui implements IMekanismPacket
 	{
 		dataStream.writeInt(packetType.ordinal());
 		
-		dataStream.writeInt(object3D.xCoord);
-		dataStream.writeInt(object3D.yCoord);
-		dataStream.writeInt(object3D.zCoord);
+		dataStream.writeInt(object3D.x);
+		dataStream.writeInt(object3D.y);
+		dataStream.writeInt(object3D.z);
 		
 		dataStream.writeInt(object3D.dimensionId);
 		

@@ -326,9 +326,9 @@ public class TileEntityDynamicTank extends TileEntityContainerBlock
 				data.add(structure.volHeight);
 				data.add(structure.volWidth);
 				data.add(structure.volLength);
-				data.add(structure.renderLocation.xCoord);
-				data.add(structure.renderLocation.yCoord);
-				data.add(structure.renderLocation.zCoord);
+				data.add(structure.renderLocation.x);
+				data.add(structure.renderLocation.y);
+				data.add(structure.renderLocation.z);
 			}
 			else {
 				data.add(false);
@@ -338,9 +338,9 @@ public class TileEntityDynamicTank extends TileEntityContainerBlock
 			
 			for(ValveData valveData : structure.valves)
 			{
-				data.add(valveData.location.xCoord);
-				data.add(valveData.location.yCoord);
-				data.add(valveData.location.zCoord);
+				data.add(valveData.location.x);
+				data.add(valveData.location.y);
+				data.add(valveData.location.z);
 				
 				data.add(valveData.side.ordinal());
 				data.add(valveData.serverFluid);

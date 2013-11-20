@@ -205,7 +205,7 @@ public class TileEntityTeleporter extends TileEntityElectricBlock implements IEn
 				entity.travelToDimension(closestCoords.dimensionId);
 			}
 			
-			((EntityPlayerMP)entity).playerNetServerHandler.setPlayerLocation(closestCoords.xCoord+0.5, closestCoords.yCoord+1, closestCoords.zCoord+0.5, entity.rotationYaw, entity.rotationPitch);
+			((EntityPlayerMP)entity).playerNetServerHandler.setPlayerLocation(closestCoords.x+0.5, closestCoords.y+1, closestCoords.z+0.5, entity.rotationYaw, entity.rotationPitch);
 			
 			for(Object3D coords : Mekanism.teleporters.get(code))
 			{
@@ -245,7 +245,7 @@ public class TileEntityTeleporter extends TileEntityElectricBlock implements IEn
 			energyCost+=10000;
 		}
 		
-		int distance = (int)entity.getDistance(coords.xCoord, coords.yCoord, coords.zCoord);
+		int distance = (int)entity.getDistance(coords.x, coords.y, coords.z);
 		energyCost+=(distance*10);
 		
 		return energyCost;

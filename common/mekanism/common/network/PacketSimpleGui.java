@@ -51,16 +51,16 @@ public class PacketSimpleGui implements IMekanismPacket
 				return;
 			}
 			
-			player.openGui(Mekanism.instance, guiId, worldServer, object3D.xCoord, object3D.yCoord, object3D.zCoord);
+			player.openGui(Mekanism.instance, guiId, worldServer, object3D.x, object3D.y, object3D.z);
 		}
 	}
 
 	@Override
 	public void write(DataOutputStream dataStream) throws Exception
 	{
-		dataStream.writeInt(object3D.xCoord);
-		dataStream.writeInt(object3D.yCoord);
-		dataStream.writeInt(object3D.zCoord);
+		dataStream.writeInt(object3D.x);
+		dataStream.writeInt(object3D.y);
+		dataStream.writeInt(object3D.z);
 		
 		dataStream.writeInt(object3D.dimensionId);
 		

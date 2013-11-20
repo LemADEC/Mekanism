@@ -152,9 +152,9 @@ public class PacketEditFilter implements IMekanismPacket
 	@Override
 	public void write(DataOutputStream dataStream) throws Exception
 	{
-		dataStream.writeInt(object3D.xCoord);
-		dataStream.writeInt(object3D.yCoord);
-		dataStream.writeInt(object3D.zCoord);
+		dataStream.writeInt(object3D.x);
+		dataStream.writeInt(object3D.y);
+		dataStream.writeInt(object3D.z);
 		
 		dataStream.writeInt(object3D.dimensionId);
 		

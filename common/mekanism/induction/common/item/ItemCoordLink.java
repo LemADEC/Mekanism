@@ -36,7 +36,7 @@ public abstract class ItemCoordLink extends ItemMekanism
 			Object3D obj = getLink(itemstack);
 			int dimID = getLinkDim(itemstack);
 
-			list.add("Bound to [" + (int) obj.xCoord + ", " + (int) obj.yCoord + ", " + (int) obj.zCoord + "], dimension '" + dimID + "'");
+			list.add("Bound to [" + (int) obj.x + ", " + (int) obj.y + ", " + (int) obj.z + "], dimension '" + dimID + "'");
 		}
 		else
 		{

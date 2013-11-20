@@ -185,7 +185,7 @@ public class PacketHandler implements IPacketHandler
         		break;
         	case CLIENTS_RANGE:
         		Object3D obj = (Object3D)transParams[0];
-        		PacketDispatcher.sendPacketToAllAround(obj.xCoord, obj.yCoord, obj.zCoord, (Double)transParams[1], obj.dimensionId, packet);
+        		PacketDispatcher.sendPacketToAllAround(obj.x, obj.y, obj.z, (Double)transParams[1], obj.dimensionId, packet);
         		break;
         	case SINGLE_CLIENT:
         		((EntityPlayerMP)transParams[0]).playerNetServerHandler.sendPacketToPlayer(packet);

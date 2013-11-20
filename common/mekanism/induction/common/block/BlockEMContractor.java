@@ -66,7 +66,7 @@ public class BlockEMContractor extends Block implements ITileEntityProvider
 
 						if(world.isRemote)
 						{
-							entityPlayer.addChatMessage("Linked " + getLocalizedName() + " with " + " [" + (int) linkVec.xCoord + ", " + (int) linkVec.yCoord + ", " + (int) linkVec.zCoord + "]");
+							entityPlayer.addChatMessage("Linked " + getLocalizedName() + " with " + " [" + (int) linkVec.x + ", " + (int) linkVec.y + ", " + (int) linkVec.z + "]");
 						}
 
 						link.clearLink(entityPlayer.getCurrentEquippedItem());

@@ -213,8 +213,8 @@ public final class MekanismUtils
 			Object3D coords0 = Mekanism.teleporters.get(teleCode).get(0);
 			Object3D coords1 = Mekanism.teleporters.get(teleCode).get(1);
 			
-			int distance0 = (int)player.getDistance(coords0.xCoord, coords0.yCoord, coords0.zCoord);
-			int distance1 = (int)player.getDistance(coords1.xCoord, coords1.yCoord, coords1.zCoord);
+			int distance0 = (int)player.getDistance(coords0.x, coords0.y, coords0.z);
+			int distance1 = (int)player.getDistance(coords1.x, coords1.y, coords1.z);
 			
 			if(dimensionId == coords0.dimensionId && dimensionId != coords1.dimensionId)
 			{
@@ -606,7 +606,7 @@ public final class MekanismUtils
 		
 		if(!world.isRemote)
 		{
-			((TileEntityBoundingBlock)world.getBlockTileEntity(x, y, z)).setMainLocation(orig.xCoord, orig.yCoord, orig.zCoord);
+			((TileEntityBoundingBlock)world.getBlockTileEntity(x, y, z)).setMainLocation(orig.intX(), orig.intY(), orig.intZ());
 		}
     }
     

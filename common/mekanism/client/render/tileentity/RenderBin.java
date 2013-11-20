@@ -48,7 +48,7 @@ public class RenderBin extends TileEntitySpecialRenderer
 
         	Object3D obj = Object3D.get(tileEntity).getFromSide(ForgeDirection.getOrientation(tileEntity.facing));
         	
-            if(tileEntity.worldObj.isBlockSolidOnSide(obj.xCoord, obj.yCoord, obj.zCoord, ForgeDirection.getOrientation(tileEntity.facing).getOpposite()))
+            if(tileEntity.worldObj.isBlockSolidOnSide(obj.x, obj.y, obj.z, ForgeDirection.getOrientation(tileEntity.facing).getOpposite()))
             {
                 return;
             }
@@ -104,12 +104,12 @@ public class RenderBin extends TileEntitySpecialRenderer
 
     private void doLight(World world, Object3D obj)
     {
-        if(world.isBlockOpaqueCube(obj.xCoord, obj.yCoord, obj.zCoord))
+        if(world.isBlockOpaqueCube(obj.x, obj.y, obj.z))
         {
             return;
         }
         
-        int brightness = world.getLightBrightnessForSkyBlocks(obj.xCoord, obj.yCoord, obj.zCoord, 0);
+        int brightness = world.getLightBrightnessForSkyBlocks(obj.x, obj.y, obj.z, 0);
         int lightX = brightness % 65536;
         int lightY = brightness / 65536;
         float scale = 0.6F;

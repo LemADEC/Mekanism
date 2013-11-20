@@ -138,16 +138,16 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 		{
 			Object3D wrapper = Object3D.get(this).getFromSide(orientation);
 			
-			if(MekanismUtils.isFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord))
+			if(MekanismUtils.isFluid(worldObj, wrapper.x, wrapper.y, wrapper.z))
 			{
-				if(fluidTank.getFluid() == null || MekanismUtils.getFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord).isFluidEqual(fluidTank.getFluid()))
+				if(fluidTank.getFluid() == null || MekanismUtils.getFluid(worldObj, wrapper.x, wrapper.y, wrapper.z).isFluidEqual(fluidTank.getFluid()))
 				{
 					if(take)
 					{
 						setEnergy(getEnergy() - 100);
-						recurringNodes.add(new Object3D(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord));
-						fluidTank.fill(MekanismUtils.getFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord), true);
-						worldObj.setBlockToAir(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord);
+						recurringNodes.add(new Object3D(wrapper.x, wrapper.y, wrapper.z));
+						fluidTank.fill(MekanismUtils.getFluid(worldObj, wrapper.x, wrapper.y, wrapper.z), true);
+						worldObj.setBlockToAir(wrapper.x, wrapper.y, wrapper.z);
 					}
 					
 					return true;
@@ -157,15 +157,15 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 		
 		for(Object3D wrapper : cleaningNodes)
 		{
-			if(MekanismUtils.isFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord))
+			if(MekanismUtils.isFluid(worldObj, wrapper.x, wrapper.y, wrapper.z))
 			{
-				if(fluidTank.getFluid() != null && MekanismUtils.getFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord).isFluidEqual(fluidTank.getFluid()))
+				if(fluidTank.getFluid() != null && MekanismUtils.getFluid(worldObj, wrapper.x, wrapper.y, wrapper.z).isFluidEqual(fluidTank.getFluid()))
 				{
 					if(take)
 					{
 						setEnergy(getEnergy() - 100);
-						fluidTank.fill(MekanismUtils.getFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord), true);
-						worldObj.setBlockToAir(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord);
+						fluidTank.fill(MekanismUtils.getFluid(worldObj, wrapper.x, wrapper.y, wrapper.z), true);
+						worldObj.setBlockToAir(wrapper.x, wrapper.y, wrapper.z);
 					}
 					
 					return true;
@@ -175,15 +175,15 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 		
 		for(Object3D wrapper : tempPumpList)
 		{
-			if(MekanismUtils.isFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord))
+			if(MekanismUtils.isFluid(worldObj, wrapper.x, wrapper.y, wrapper.z))
 			{
-				if(fluidTank.getFluid() == null || MekanismUtils.getFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord).isFluidEqual(fluidTank.getFluid()))
+				if(fluidTank.getFluid() == null || MekanismUtils.getFluid(worldObj, wrapper.x, wrapper.y, wrapper.z).isFluidEqual(fluidTank.getFluid()))
 				{
 					if(take)
 					{
 						setEnergy(electricityStored - 100);
-						fluidTank.fill(MekanismUtils.getFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord), true);
-						worldObj.setBlockToAir(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord);
+						fluidTank.fill(MekanismUtils.getFluid(worldObj, wrapper.x, wrapper.y, wrapper.z), true);
+						worldObj.setBlockToAir(wrapper.x, wrapper.y, wrapper.z);
 					}
 					
 					return true;
@@ -196,16 +196,16 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 				
 				if(Object3D.get(this).distanceTo(side) <= 80)
 				{
-					if(MekanismUtils.isFluid(worldObj, side.xCoord, side.yCoord, side.zCoord))
+					if(MekanismUtils.isFluid(worldObj, side.x, side.y, side.z))
 					{
-						if(fluidTank.getFluid() == null || MekanismUtils.getFluid(worldObj, side.xCoord, side.yCoord, side.zCoord).isFluidEqual(fluidTank.getFluid()))
+						if(fluidTank.getFluid() == null || MekanismUtils.getFluid(worldObj, side.x, side.y, side.z).isFluidEqual(fluidTank.getFluid()))
 						{
 							if(take)
 							{
 								setEnergy(electricityStored - 100);
 								recurringNodes.add(side);
-								fluidTank.fill(MekanismUtils.getFluid(worldObj, side.xCoord, side.yCoord, side.zCoord), true);
-								worldObj.setBlockToAir(side.xCoord, side.yCoord, side.zCoord);
+								fluidTank.fill(MekanismUtils.getFluid(worldObj, side.x, side.y, side.z), true);
+								worldObj.setBlockToAir(side.x, side.y, side.z);
 							}
 							
 							return true;
@@ -228,14 +228,14 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 		{
 			for(Object3D wrapper : cleaningNodes)
 			{
-				if(MekanismUtils.isDeadFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord))
+				if(MekanismUtils.isDeadFluid(worldObj, wrapper.x, wrapper.y, wrapper.z))
 				{
-					if(fluidTank.getFluid() != null && MekanismUtils.getFluidId(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord) == fluidTank.getFluid().fluidID)
+					if(fluidTank.getFluid() != null && MekanismUtils.getFluidId(worldObj, wrapper.x, wrapper.y, wrapper.z) == fluidTank.getFluid().fluidID)
 					{
 						took = true;
 						if(take)
 						{
-							worldObj.setBlockToAir(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord);
+							worldObj.setBlockToAir(wrapper.x, wrapper.y, wrapper.z);
 						}
 					}
 				}
@@ -243,14 +243,14 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 			
 			for(Object3D wrapper : recurringNodes)
 			{
-				if(MekanismUtils.isDeadFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord))
+				if(MekanismUtils.isDeadFluid(worldObj, wrapper.x, wrapper.y, wrapper.z))
 				{
-					if(fluidTank.getFluid() != null && MekanismUtils.getFluidId(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord) == fluidTank.getFluid().fluidID)
+					if(fluidTank.getFluid() != null && MekanismUtils.getFluidId(worldObj, wrapper.x, wrapper.y, wrapper.z) == fluidTank.getFluid().fluidID)
 					{
 						took = true;
 						if(take)
 						{
-							worldObj.setBlockToAir(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord);
+							worldObj.setBlockToAir(wrapper.x, wrapper.y, wrapper.z);
 						}
 					}
 				}
@@ -260,14 +260,14 @@ public class TileEntityElectricPump extends TileEntityElectricBlock implements I
 			{
 				Object3D wrapper = Object3D.get(this).getFromSide(orientation);
 				
-				if(MekanismUtils.isDeadFluid(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord))
+				if(MekanismUtils.isDeadFluid(worldObj, wrapper.x, wrapper.y, wrapper.z))
 				{
-					if(fluidTank.getFluid() != null && MekanismUtils.getFluidId(worldObj, wrapper.xCoord, wrapper.yCoord, wrapper.zCoord) == fluidTank.getFluid().fluidID)
+					if(fluidTank.getFluid() != null && MekanismUtils.getFluidId(worldObj, wrapper.x, wrapper.y, wrapper.z) == fluidTank.getFluid().fluidID)
 					{
 						took = true;
 						if(take)
 						{
-							worldObj.setBlockToAir(wrapper.xCoord, wrapper.yCoord, wrapper.zCoord);
+							worldObj.setBlockToAir(wrapper.x, wrapper.y, wrapper.z);
 						}
 					}
 				}

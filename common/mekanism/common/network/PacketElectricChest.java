@@ -234,9 +234,9 @@ public class PacketElectricChest implements IMekanismPacket
 				
 				if(isBlock)
 				{
-					dataStream.writeInt(obj.xCoord);
-					dataStream.writeInt(obj.yCoord);
-					dataStream.writeInt(obj.zCoord);
+					dataStream.writeInt(obj.x);
+					dataStream.writeInt(obj.y);
+					dataStream.writeInt(obj.z);
 				}
 				
 				break;
@@ -246,9 +246,9 @@ public class PacketElectricChest implements IMekanismPacket
 				
 				if(isBlock)
 				{
-					dataStream.writeInt(obj.xCoord);
-					dataStream.writeInt(obj.yCoord);
-					dataStream.writeInt(obj.zCoord);
+					dataStream.writeInt(obj.x);
+					dataStream.writeInt(obj.y);
+					dataStream.writeInt(obj.z);
 				}
 				
 				break;
@@ -259,9 +259,9 @@ public class PacketElectricChest implements IMekanismPacket
 				
 				if(isBlock)
 				{
-					dataStream.writeInt(obj.xCoord);
-					dataStream.writeInt(obj.yCoord);
-					dataStream.writeInt(obj.zCoord);
+					dataStream.writeInt(obj.x);
+					dataStream.writeInt(obj.y);
+					dataStream.writeInt(obj.z);
 				}
 				
 				break;
@@ -271,9 +271,9 @@ public class PacketElectricChest implements IMekanismPacket
 				
 				if(isBlock)
 				{
-					dataStream.writeInt(obj.xCoord);
-					dataStream.writeInt(obj.yCoord);
-					dataStream.writeInt(obj.zCoord);
+					dataStream.writeInt(obj.x);
+					dataStream.writeInt(obj.y);
+					dataStream.writeInt(obj.z);
 				}
 				
 				break;

@@ -326,7 +326,7 @@ public final class TransporterUtils
 			itemFix = 0.1F;
 		}
 		
-		return new float[] {0.5F + offset.xCoord*progress, 0.5F + offset.yCoord*progress - itemFix, 0.5F + offset.zCoord*progress};
+		return new float[] {0.5F + offset.x*progress, 0.5F + offset.y*progress - itemFix, 0.5F + offset.z*progress};
 	}
 	
     public static void incrementColor(TileEntityLogisticalTransporter tileEntity)

@@ -99,9 +99,9 @@ public class PacketConfigurationUpdate implements IMekanismPacket
 	{
 		dataStream.writeInt(packetType.ordinal());
 		
-		dataStream.writeInt(object3D.xCoord);
-		dataStream.writeInt(object3D.yCoord);
-		dataStream.writeInt(object3D.zCoord);
+		dataStream.writeInt(object3D.x);
+		dataStream.writeInt(object3D.y);
+		dataStream.writeInt(object3D.z);
 		
 		dataStream.writeInt(object3D.dimensionId);
 		

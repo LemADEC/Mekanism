@@ -220,27 +220,27 @@ public class TankUpdateProtocol
 	
 	public ForgeDirection getSide(Object3D obj, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax)
 	{
-		if(obj.xCoord == xmin)
+		if(obj.x == xmin)
 		{
 			return ForgeDirection.WEST;
 		}
-		else if(obj.xCoord == xmax)
+		else if(obj.x == xmax)
 		{
 			return ForgeDirection.EAST;
 		}
-		else if(obj.yCoord == ymin)
+		else if(obj.y == ymin)
 		{
 			return ForgeDirection.DOWN;
 		}
-		else if(obj.yCoord == ymax)
+		else if(obj.y == ymax)
 		{
 			return ForgeDirection.UP;
 		}
-		else if(obj.zCoord == zmin)
+		else if(obj.z == zmin)
 		{
 			return ForgeDirection.NORTH;
 		}
-		else if(obj.zCoord == zmax)
+		else if(obj.z == zmax)
 		{
 			return ForgeDirection.SOUTH;
 		}
@@ -288,7 +288,7 @@ public class TankUpdateProtocol
 	 */
 	private boolean isCorrectCorner(Object3D obj, int xmin, int ymin, int zmin)
 	{
-		if(obj.xCoord == xmin && obj.yCoord == ymin && obj.zCoord == zmin)
+		if(obj.x == xmin && obj.y == ymin && obj.z == zmin)
 		{
 			return true;
 		}
@@ -309,31 +309,31 @@ public class TankUpdateProtocol
 	 */
 	private boolean isFrame(Object3D obj, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax)
 	{
-		if(obj.xCoord == xmin && obj.yCoord == ymin)
+		if(obj.x == xmin && obj.y == ymin)
 			return true;
-		if(obj.xCoord == xmax && obj.yCoord == ymin)
+		if(obj.x == xmax && obj.y == ymin)
 			return true;
-		if(obj.xCoord == xmin && obj.yCoord == ymax)
+		if(obj.x == xmin && obj.y == ymax)
 			return true;
-		if(obj.xCoord == xmax && obj.yCoord == ymax)
-			return true;
-		
-		if(obj.xCoord == xmin && obj.zCoord == zmin)
-			return true;
-		if(obj.xCoord == xmax && obj.zCoord == zmin)
-			return true;
-		if(obj.xCoord == xmin && obj.zCoord == zmax)
-			return true;
-		if(obj.xCoord == xmax && obj.zCoord == zmax)
+		if(obj.x == xmax && obj.y == ymax)
 			return true;
 		
-		if(obj.yCoord == ymin && obj.zCoord == zmin)
+		if(obj.x == xmin && obj.z == zmin)
 			return true;
-		if(obj.yCoord == ymax && obj.zCoord == zmin)
+		if(obj.x == xmax && obj.z == zmin)
 			return true;
-		if(obj.yCoord == ymin && obj.zCoord == zmax)
+		if(obj.x == xmin && obj.z == zmax)
 			return true;
-		if(obj.yCoord == ymax && obj.zCoord == zmax)
+		if(obj.x == xmax && obj.z == zmax)
+			return true;
+		
+		if(obj.y == ymin && obj.z == zmin)
+			return true;
+		if(obj.y == ymax && obj.z == zmin)
+			return true;
+		if(obj.y == ymin && obj.z == zmax)
+			return true;
+		if(obj.y == ymax && obj.z == zmax)
 			return true;
 		
 		return false;

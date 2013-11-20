@@ -53,7 +53,7 @@ public class RenderDynamicTank extends TileEntitySpecialRenderer
 			{
 				push();
 				
-				GL11.glTranslated(getX(data.location.xCoord), getY(data.location.yCoord), getZ(data.location.zCoord));
+				GL11.glTranslated(getX(data.location.x), getY(data.location.y), getZ(data.location.z));
 				
 				if(tileEntity.structure.fluidStored.getFluid() == FluidRegistry.LAVA)
 				{
@@ -85,7 +85,7 @@ public class RenderDynamicTank extends TileEntitySpecialRenderer
 					{
 						push();
 						
-						GL11.glTranslated(getX(valveData.location.xCoord), getY(valveData.location.yCoord), getZ(valveData.location.zCoord));
+						GL11.glTranslated(getX(valveData.location.x), getY(valveData.location.y), getZ(valveData.location.z));
 						
 						if(tileEntity.structure.fluidStored.getFluid() == FluidRegistry.LAVA)
 						{
@@ -283,7 +283,7 @@ public class RenderDynamicTank extends TileEntitySpecialRenderer
 	
 	private int getValveFluidHeight(ValveRenderData data)
 	{
-		return data.valveLocation.yCoord - data.location.yCoord;
+		return data.valveLocation.y - data.location.y;
 	}
 	
 	private int getStages(int height)

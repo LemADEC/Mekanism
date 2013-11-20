@@ -301,7 +301,7 @@ public class EntityRobit extends EntityCreature implements IInventory, ISustaine
 			travelToDimension(homeLocation.dimensionId);
 		}
 		
-		setPositionAndUpdate(homeLocation.xCoord+0.5, homeLocation.yCoord+0.3, homeLocation.zCoord+0.5);
+		setPositionAndUpdate(homeLocation.x+0.5, homeLocation.y+0.3, homeLocation.z+0.5);
 		
 		motionX = 0;
 		motionY = 0;

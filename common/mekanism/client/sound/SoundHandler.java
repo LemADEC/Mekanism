@@ -307,7 +307,7 @@ public class SoundHandler
 			System.out.println("[Mekanism] Invalid sound file: " + soundPath);
 		}
 		
-		String s = getSoundSystem().quickPlay(false, url, soundPath, false, object.xCoord, object.yCoord, object.zCoord, 0, 16F);
+		String s = getSoundSystem().quickPlay(false, url, soundPath, false, object.x, object.y, object.z, 0, 16F);
 		getSoundSystem().setVolume(s, masterVolume);
 	}
 	
